@@ -1,0 +1,239 @@
+<!--
+ Copyright 2015 Google Inc. All Rights Reserved.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cardboard viewer profile generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,300,100' rel='stylesheet' type='text/css'>
+  <link href="images/favicon-32.png" rel="shortcut icon" type="image/x-icon">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.1/ui-bootstrap-tpls.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.11/seedrandom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js"></script>
+  <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+  <script src="https://cdn.firebase.com/libs/angularfire/0.9.1/angularfire.min.js"></script>
+  <script src="https://wurfl.io/wurfl.js"></script>
+  <script src="js/third-party/ngScrollSpy.min.js"></script>
+  <script src="js/third-party/ByteBufferAB.min.js"></script>
+  <script src="js/third-party/ProtoBuf.min.js"></script>
+  <script src="js/third-party/qrcode.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/Cardboard.js"></script>
+  <script src="js/app.js"></script>
+</head>
+
+<body ng-app="myApp" ng-controller="myController">
+  <div class="wrapper">
+
+    <div class="header clearfix" id="content">
+      <div class="container group">
+        <div class="welcome-header">
+          <img src="images/header-vpg.png" height="177" width="290" class="pull-right animated fadeIn" alt=" " />
+          <h1 class="animated fadeInUp">VR HMD Tuner</h1>
+          <h4 class="animated fadeInUp">Tune your HMD for geometric and chromatic aberrations.</h4>
+        </div>
+        <div ng-show="wizard_step == steps.OUTPUT" class="success-header ng-hide">
+          <h1 class="animated fadeInUp">Success!</h1>
+          <md-button class="md-flat md-large animated fadeInUp" ng-click="wizard_step = steps.WELCOME"> <img src="images/white_arrow.png" height="12" width="7" alt=" "/> Back to Form </md-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container clearfix">
+      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+
+    <div class="fade-in-out clearfix" ng-show="wizard_step == steps.WELCOME">
+      <div class="container">
+        <div class="hero">
+          <div ng-controller="ModalCtrl" style="margin-bottom: 22px;">
+            <script type="text/ng-template" id="compatibleSmartphones.html">
+              <div class="modal-header">
+                <h4 class="modal-title">Prerequisites</h4>
+              </div>
+              <div class="modal-body">
+                <p>In order to create a viewer profile, you will need a smartphone that is equipped for viewing the lens calibration VR scene.</p>
+                <p>In particular, it needs to meet these requirements:</p>
+                <ol>
+                  <li>
+                    <p>The smartphone must have support for <strong>OpenGL ES 2.0 or above </strong>.</p>
+                  </li>
+                  <li>
+                    <p>
+                      The smartphone screen should be bigger than the total visible screen area (i.e. bigger than the smartphone facing apertures) on your
+                      viewer. Here are a couple of examples:
+                    </p>
+                    <div class="figure">
+                      <img src="images/too_small_phone.png"/><br/>
+                      <i>Insufficient smartphone screen size for viewer profile creation.</i>
+                    </div>
+                    <div class="figure">
+                      <img src="images/well_sized_phone.png"/><br/>
+                      <i>Sufficient smartphone screen size for viewer profile creation.</i>
+                    </div>
+                    </ul>
+                  </li>
+                </ol>
+                <p>If you encounter bugs in the tool or have suggestions for improvements, please drop us a line at <a href="conradh@qti.qualcomm.com">wwgc@google.com</a>.</p>
+              </div>
+              <div class="modal-footer">
+                <md-button class="md-raised md-accent" ng-click="ok()">Got it, thank you!</md-button>
+              </div>
+            </script>
+
+            <h1 class="seperator">Getting started</h1>
+            <div class="row">
+              <div class="col-md-4 step-one">
+                <span class="num">1</span>
+                <p>You will need an <a href="#" ng-click="open()">Android smartphone</a> that meets some basic&nbsp;requirements.</p>
+                <img src="images/step_1_phones.png" height="253" width="202" alt="Nexus 6 or an iPhone 6 Plus">
+              </div>
+              <hr class="show-md" />
+              <div class="col-md-4 step-two">
+                <span class="num">2</span>
+                <p>Use your HMDTuner app on your Android phone and scan the QR code&nbsp;below.</p>
+                <div id="remote_qrcode"></div>
+              </div>
+              <hr class="show-md" />
+              <div class="col-md-4 step-three">
+                <span class="num">3</span>
+                <p>Place your phone in the viewer. Use the viewer parameter form below to calibrate your VR&nbsp;scene.</p>
+                <img src="images/step_3_vr.png" height="262" width="210" alt=" " />
+              </div>
+            </div>
+            <hr class="show-md" />
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <div class="row text-left tip-arrow-keys">
+              <div class="col-md-2 text-center"><img src="images/tip-up-down-keys.png" height="64" width="97" /></div>
+              <div class="col-md-10"><p><strong>Tip:</strong> The VR scene is synced to the Viewer Parameter Form. You can adjust the parameters using your keyboard while the viewer is held up to your head.</p></div>
+            </div>
+            <div class="row text-left tip-tab">
+              <div class="col-md-2 text-center"><img src="images/tip-tab.png" height="46" width="77" /></div>
+              <div class="col-md-10"><p>Use the &ldquo;tab&rdquo; key to jump between fields. Use the up and down keyboard arrows to increase or decrease values within the fields.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container viewerParameters clearfix">
+          <h1 class="seperator">HMD Parameter Form</h1>
+          <div class="row">
+            <div class="col-md-6"><p>Fill in the fields below to establish your HMD profile.</p></div>
+          </div>
+        </div>
+
+        <div class="container formContainer clearfix">
+          <div class="panel">
+            <div class="panel-body">
+              <form name="parameters" novalidate="" class="form-horizontal col-sm-6">
+              <div class="form-group">
+                <p class="form-label">Screen to lens distance (mm) <md-button class="md-flat helper show-md" ng-click="focus='screen_to_lens_distance'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
+                <input type="number" id="form-screen_to_lens_distance" min="0" inputmode="numeric" class="form-control" ng-model="params.screen_to_lens_distance" ng-change="save()" my-scale="1000" round-view="0" ng-focus="focus='screen_to_lens_distance'" onkeypress="return (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46)" ng-change="params.screen_to_lens_distance = this.value; alert(this.value(); save()" />
+              </div>
+              <div class="form-group">
+                <p class="form-label">Inter-lens distance (mm)<md-button class="md-flat helper show-md" ng-click="focus='inter_lens_distance'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
+                <input type="number" id="form-inter_lens_distance" min="0" inputmode="numeric" class="form-control" ng-model="params.inter_lens_distance" ng-change="save()" my-scale="1000" round-view="0" ng-focus="focus='inter_lens_distance'" onkeypress="return (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46)" />
+              </div>
+            <div class="form-group">
+              <p class="form-label">Distortion coefficients<md-button class="md-flat helper show-md" ng-click="focus='distortion_coefficients'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
+              <p class="distortion-container">
+                <span ng-repeat="name in ['1', '2']">
+                  <small style="font-size: 70%">k<sub>{{name}}</sub></small> <input class="form-control" name="k{{name}}" type="number" inputmode="numeric" ng-model="params.distortion_coefficients[$index]" step=".01" ng-change="save()" round-view="2" ng-focus="$parent.focus='distortion_coefficients'" style="width: 5.5em; display: inline; margin-right: 1em;" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" ng-non-zero/> <span style="color:red; font-size: 16px;" ng-show="parameters.k{{name}}.$invalid">k<sub>{{name}}</sub> coefficient should not be left set to 0.00.</span>
+                </span>
+              </p>
+            </div>
+            <div class="form-group expander" ng-class="{'active': isAdvancedExpanded}" data-ng-click="isAdvancedExpanded = !isAdvancedExpanded">
+             <p class="form-label"> Advanced viewer parameters <img src="images/expand_button.png" height="10" width="17" /></p>
+           </div>
+           <div ng-class="{'active': isAdvancedExpanded}" class="advanced_options">
+            <div class="form-group">
+              <p class="form-label">Field-of-view angles<md-button class="md-flat helper show-md" ng-click="focus='left_eye_field_of_view_angles'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
+              <span ng-repeat="name in ['Outer', 'Inner', 'Top', 'Bottom']">
+                {{name}} (&deg;) <input class="form-control" type="number" inputmode="numeric" min="0" ng-model="params.left_eye_field_of_view_angles[$index]" ng-focus="$parent.focus='left_eye_field_of_view_angles'" ng-change="save()" round-view="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46)" />
+              </span>
+            </div>
+          </div>
+          <div class="buttons">
+            <md-button class="md-raised md-accent md-large" ng-disabled="parameters.k1.$invalid || parameters.k2.$invalid" ng-click="wizard_step = steps.OUTPUT"> Generate profile </md-button>
+            <div class="clearfix"></div>
+          </div>
+        </form>
+        <div class="col-sm-6" ng-if="wizard_step == steps.WELCOME">
+          <!-- TODO: declare context help together with input field somehow? -->
+          <div class="product-help" affix>
+            <div class="alert alert-tooltip">
+              <div ng-if="focus == 'screen_to_lens_distance'">
+                <h4 ng-bind-html="helper_sections.screen_to_lens_distance.title | raw_html"></h4>
+                <div ng-bind-html="helper_sections.screen_to_lens_distance.content | raw_html"></div>
+              </div>
+              <div ng-if="focus == 'inter_lens_distance'">
+                <h4 ng-bind-html="helper_sections.inter_lens_distance.title | raw_html"></h4>
+                <div ng-bind-html="helper_sections.inter_lens_distance.content | raw_html"></div>
+              </div>
+              <div ng-show="focus == 'distortion_coefficients'">
+                <h4 ng-bind-html="helper_sections.distortion_coefficients.title | raw_html"></h4>
+                <div ng-bind-html="helper_sections.distortion_coefficients.content | raw_html"></div>
+              </div>
+              <div ng-if="focus == 'left_eye_field_of_view_angles'">
+                <h4 ng-bind-html="helper_sections.left_eye_field_of_view_angles.title | raw_html"></h4>
+                <div ng-bind-html="helper_sections.left_eye_field_of_view_angles.content | raw_html"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Form ends here!! -->
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+
+  <div class="fade-in-out clearfix" ng-show="wizard_step == steps.OUTPUT">
+    <div class="container">
+      <div class="panel">
+        <div class="panel-body animated fadeInUp">
+          <h1 class="seperator animated fadeInUp">Usage Guidelines</h1>
+          <p style="color:#666;margin-top:42px;">Use at yout own peril.</p>
+          <p>&nbsp;</p>
+          <p>&nbsp;</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer clearfix" id="maia-footer">
+  <div class="container maia-aux">
+    <div class="logo">
+      <a href="https://qualcomm.com"><img alt="Qualcomm VR" src="images/cardboard-logo-white.png" height="25" width="75"></a>
+    </div>
+    <div class="pull-right">
+      <a href="https://www.qualcomm.com/company/about">About Qualcomm</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
