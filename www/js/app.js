@@ -419,6 +419,7 @@ angular
             console.log("Authenticated on Firebase via provider",
               authData.provider);
             $scope.firebase_token = authData.token;
+            console.log("Token=", $scope.firebase_token);
             var firebase_user = firebase_root.child('users').child(authData.uid);
             $scope.data = $firebase(firebase_user).$asObject();
             // init form data on initial load
