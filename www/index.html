@@ -149,6 +149,10 @@
             <div class="panel-body">
               <form name="parameters" novalidate="" class="form-horizontal col-sm-6">
               <div class="form-group">
+                <p class="form-label">Display pixels-per-inch (pixels) <md-button class="md-flat helper show-md" ng-click="focus='display_pixels_per_inch'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
+                <input type="number" id="form-display_pixels_per_inch" min="0" inputmode="numeric" class="form-control" ng-model="params.display_pixels_per_inch" ng-change="save()" my-scale="1" round-view="0" ng-focus="focus='display_pixels_per_inch'" onkeypress="return (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46)" ng-change="params.display_pixels_per_inch = this.value; alert(this.value(); save()" />
+              </div>
+              <div class="form-group">
                 <p class="form-label">Screen to lens distance (mm) <md-button class="md-flat helper show-md" ng-click="focus='screen_to_lens_distance'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
                 <input type="number" id="form-screen_to_lens_distance" min="0" inputmode="numeric" class="form-control" ng-model="params.screen_to_lens_distance" ng-change="save()" my-scale="1000" round-view="0" ng-focus="focus='screen_to_lens_distance'" onkeypress="return (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46)" ng-change="params.screen_to_lens_distance = this.value; alert(this.value(); save()" />
               </div>
@@ -160,7 +164,13 @@
               <p class="form-label">Distortion coefficients<md-button class="md-flat helper show-md" ng-click="focus='distortion_coefficients'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
               <p class="distortion-container">
                 <span ng-repeat="name in ['1', '2']">
-                  <small style="font-size: 70%">k<sub>{{name}}</sub></small> <input class="form-control" name="k{{name}}" type="number" inputmode="numeric" ng-model="params.distortion_coefficients[$index]" step=".01" ng-change="save()" round-view="2" ng-focus="$parent.focus='distortion_coefficients'" style="width: 5.5em; display: inline; margin-right: 1em;" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" ng-non-zero/> <span style="color:red; font-size: 16px;" ng-show="parameters.k{{name}}.$invalid">k<sub>{{name}}</sub> coefficient should not be left set to 0.00.</span>
+                  <small style="font-size: 70%">kr<sub>{{name}}</sub></small> <input class="form-control" name="kr{{name}}" type="number" inputmode="numeric" ng-model="params.distortion_coefficients_r[$index]" step=".01" ng-change="save()" round-view="2" ng-focus="$parent.focus='distortion_coefficients'" style="width: 5.5em; display: inline; margin-right: 1em;" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" ng-non-zero/> <span style="color:red; font-size: 16px;" ng-show="parameters.k{{name}}.$invalid">k<sub>{{name}}</sub> coefficient should not be left set to 0.00.</span>
+                </span>
+                <span ng-repeat="name in ['1', '2']">
+                  <small style="font-size: 70%">kg<sub>{{name}}</sub></small> <input class="form-control" name="kg{{name}}" type="number" inputmode="numeric" ng-model="params.distortion_coefficients_g[$index]" step=".01" ng-change="save()" round-view="2" ng-focus="$parent.focus='distortion_coefficients'" style="width: 5.5em; display: inline; margin-right: 1em;" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" ng-non-zero/> <span style="color:red; font-size: 16px;" ng-show="parameters.k{{name}}.$invalid">k<sub>{{name}}</sub> coefficient should not be left set to 0.00.</span>
+                </span>
+                <span ng-repeat="name in ['1', '2']">
+                  <small style="font-size: 70%">kb<sub>{{name}}</sub></small> <input class="form-control" name="kb{{name}}" type="number" inputmode="numeric" ng-model="params.distortion_coefficients_b[$index]" step=".01" ng-change="save()" round-view="2" ng-focus="$parent.focus='distortion_coefficients'" style="width: 5.5em; display: inline; margin-right: 1em;" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" ng-non-zero/> <span style="color:red; font-size: 16px;" ng-show="parameters.k{{name}}.$invalid">k<sub>{{name}}</sub> coefficient should not be left set to 0.00.</span>
                 </span>
               </p>
             </div>
@@ -184,6 +194,10 @@
           <!-- TODO: declare context help together with input field somehow? -->
           <div class="product-help" affix>
             <div class="alert alert-tooltip">
+              <div ng-if="focus == 'display_pixels_per_inch'">
+                <h4 ng-bind-html="helper_sections.display_pixels_per_inch.title | raw_html"></h4>
+                <div ng-bind-html="helper_sections.display_pixels_per_inch.content | raw_html"></div>
+              </div>
               <div ng-if="focus == 'screen_to_lens_distance'">
                 <h4 ng-bind-html="helper_sections.screen_to_lens_distance.title | raw_html"></h4>
                 <div ng-bind-html="helper_sections.screen_to_lens_distance.content | raw_html"></div>

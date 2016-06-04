@@ -40,6 +40,11 @@ var PARAM_QR_CUSTOM_PADDING = {
 };
 
 var HELPER_PARAMETER_MODAL = {
+  'display_pixels_per_inch': {
+    focus: 'vendor',
+    title: 'Display pixels-per-inch&nbsp;(pixels)',
+    content: '<img src="images/screen-to-lens.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> If your viewer comes with an adjustable focal distance, measure the average distance between the screen and the&nbsp;lenses.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
+  },
   'screen_to_lens_distance': {
     focus: 'vendor',
     title: 'Screen to lens distance&nbsp;(mm)',
@@ -94,7 +99,7 @@ function funGraph(ctx,axes,func,color,thick) {
   ctx.stroke();
 }
 
-function distortionPlot(k1, k2) {
+function distortionPlot(kr1, kr2, kg1, kg2, kb1, kb2) {
   var canvas = document.getElementById("distortion_plot");
   var ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -110,8 +115,14 @@ function distortionPlot(k1, k2) {
 
   showAxes(ctx,axes);
   funGraph(ctx,axes, function(x) {
-    return 1 + k1 * Math.pow(x, 2) + k2 * Math.pow(x, 4);
-  }, "rgb(255,110,64)", 2);
+    return 1 + kr1 * Math.pow(x, 2) + kr2 * Math.pow(x, 4);
+  }, "rgb(255,20,20)", 2);
+  funGraph(ctx,axes, function(x) {
+    return 1 + kg1 * Math.pow(x, 2) + kg2 * Math.pow(x, 4);
+  }, "rgb(20,255,20)", 2);
+  funGraph(ctx,axes, function(x) {
+    return 1 + kb1 * Math.pow(x, 2) + kb2 * Math.pow(x, 4);
+  }, "rgb(20,20,255)", 2);
 }
 
 function makeQr(minType, correctionLevel, text, customPadding) {
@@ -336,15 +347,22 @@ angular
       $scope.save = function() {
 
         $scope.data.update_timestamp = Firebase.ServerValue.TIMESTAMP;
+        $scope.data.display_pixels_per_inch = $scope.params.display_pixels_per_inch;
         $scope.data.screen_to_lens_distance = $scope.params.screen_to_lens_distance;
         $scope.data.inter_lens_distance = $scope.params.inter_lens_distance;
-        $scope.data.distortion_coefficients = $scope.params.distortion_coefficients;
+        $scope.data.distortion_coefficients_r = $scope.params.distortion_coefficients_r;
+        $scope.data.distortion_coefficients_g = $scope.params.distortion_coefficients_g;
+        $scope.data.distortion_coefficients_b = $scope.params.distortion_coefficients_b;
         $scope.data.left_eye_field_of_view_angles = $scope.params.left_eye_field_of_view_angles;
         $scope.data.$save();
 
         distortionPlot(
-          $scope.params.distortion_coefficients[0],
-          $scope.params.distortion_coefficients[1]);
+          $scope.params.distortion_coefficients_r[0],
+          $scope.params.distortion_coefficients_r[1],
+          $scope.params.distortion_coefficients_g[0],
+          $scope.params.distortion_coefficients_g[1],
+          $scope.params.distortion_coefficients_b[0],
+          $scope.params.distortion_coefficients_b[1]);
       };
 
       // true if current settings have non-default "advanced" field values
@@ -367,9 +385,12 @@ angular
 
       $scope.reset = function() {
         $scope.params = {
+          "display_pixels_per_inch": 424,
           "screen_to_lens_distance": 0.042,
           "inter_lens_distance": 0.060,
-          "distortion_coefficients": [0, 0],
+          "distortion_coefficients_r": [0, 0],
+          "distortion_coefficients_g": [0, 0],
+          "distortion_coefficients_b": [0, 0],
           "left_eye_field_of_view_angles": [50, 50, 50, 50],
         };
 
@@ -384,9 +405,12 @@ angular
       // Called when user changes params URI input field.
       $scope.set_params = function() {
         $scope.params = {
+          "display_pixels_per_inch": $scope.data.display_pixels_per_inch,
           "screen_to_lens_distance": $scope.data.screen_to_lens_distance,
           "inter_lens_distance": $scope.data.inter_lens_distance,
-          "distortion_coefficients": $scope.data.distortion_coefficients,
+          "distortion_coefficients_r": $scope.data.distortion_coefficients_r,
+          "distortion_coefficients_g": $scope.data.distortion_coefficients_g,
+          "distortion_coefficients_b": $scope.data.distortion_coefficients_b,
           "left_eye_field_of_view_angles": $scope.data.left_eye_field_of_view_angles,
         };
         $scope.save();
