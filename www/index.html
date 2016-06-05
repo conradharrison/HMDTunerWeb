@@ -105,18 +105,21 @@
               <div class="col-md-4 step-one">
                 <span class="num">1</span>
                 <p>You will need an <a href="#" ng-click="open()">Android smartphone</a> that meets some basic&nbsp;requirements.</p>
+                <p>&nbsp;</p>
                 <img src="images/step_1_phones.png" height="253" width="202" alt="Nexus 6 or an iPhone 6 Plus">
               </div>
               <hr class="show-md" />
               <div class="col-md-4 step-two">
                 <span class="num">2</span>
-                <p>Use your HMDTuner app on your Android phone and scan the QR code&nbsp;below.</p>
+                <p>Use your <a href="app-debug.apk">HMDTuner app</a> on your Android phone and scan the QR code&nbsp;below.</p>
+                <p>&nbsp;</p>
                 <div id="remote_qrcode"></div>
               </div>
               <hr class="show-md" />
               <div class="col-md-4 step-three">
                 <span class="num">3</span>
                 <p>Place your phone in the viewer. Use the viewer parameter form below to calibrate your VR&nbsp;scene.</p>
+                <p>&nbsp;</p>
                 <img src="images/step_3_vr.png" height="262" width="210" alt=" " />
               </div>
             </div>
@@ -176,9 +179,9 @@
            </div>
            <div ng-class="{'active': isAdvancedExpanded}" class="advanced_options">
             <div class="form-group">
-              <p class="form-label">Field-of-view angles<md-button class="md-flat helper show-md" ng-click="focus='left_eye_field_of_view_angles'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
+              <p class="form-label">Field-of-view angles<md-button class="md-flat helper show-md" ng-click="focus='field_of_view_angles'; showDetailsModal($event);"><img src="images/help-grey.png" height="19" width="19" alt="?" /></md-button></p>
               <span ng-repeat="name in ['Outer', 'Inner', 'Top', 'Bottom']">
-                {{name}} (&deg;) <input class="form-control" type="number" inputmode="numeric" min="0" ng-model="params.left_eye_field_of_view_angles[$index]" ng-focus="$parent.focus='left_eye_field_of_view_angles'" ng-change="save()" round-view="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46)" />
+                {{name}} (&deg;) <input class="form-control" type="number" inputmode="numeric" min="0" ng-model="params.field_of_view_angles[$index]" ng-focus="$parent.focus='field_of_view_angles'" ng-change="save()" round-view="0" onkeypress="return (event.charCode >= 48 && event.charCode <= 57 || event.charCode == 46)" />
               </span>
             </div>
           </div>
@@ -207,9 +210,9 @@
                 <h4 ng-bind-html="helper_sections.distortion_coefficients.title | raw_html"></h4>
                 <div ng-bind-html="helper_sections.distortion_coefficients.content | raw_html"></div>
               </div>
-              <div ng-if="focus == 'left_eye_field_of_view_angles'">
-                <h4 ng-bind-html="helper_sections.left_eye_field_of_view_angles.title | raw_html"></h4>
-                <div ng-bind-html="helper_sections.left_eye_field_of_view_angles.content | raw_html"></div>
+              <div ng-if="focus == 'field_of_view_angles'">
+                <h4 ng-bind-html="helper_sections.field_of_view_angles.title | raw_html"></h4>
+                <div ng-bind-html="helper_sections.field_of_view_angles.content | raw_html"></div>
               </div>
             </div>
           </div>

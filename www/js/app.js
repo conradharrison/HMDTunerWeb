@@ -19,7 +19,7 @@
 /*global alert, btoa, confirm, window, document, XMLSerializer,
   angular, Firebase, gapi, qrcode, Snap, WURFL, CARDBOARD, CONFIG, ga*/
 
-var QR_PIXELS_PER_CELL = 3;
+var QR_PIXELS_PER_CELL = 5;
 
 // For QR type 5, 32 characters of usable data.
 var PARAM_QR_CUSTOM_PADDING = {
@@ -60,7 +60,7 @@ var HELPER_PARAMETER_MODAL = {
     title: 'Distortion Coefficients',
     content: '<p>View the lens calibration VR scene which appears on your smartphone. Adjust the data until the vertical lines appear straight and angles appear right (90 degrees) through your viewer&nbsp;lenses.</p><div class="hide-in-modal"><p>This is the current lens curvature for your distortion&nbsp;coefficients:</p><p class="text-center"><div id="canvas-container"><canvas id="distortion_plot" width="140" height="280" style="width:auto; height: 100%;"></canvas></div></p></div><p><strong>Note:</strong> distortion coefficients should not be left set to 0.00 for any curved lens.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
   },
-  'left_eye_field_of_view_angles': {
+  'field_of_view_angles': {
     focus: 'vendor',
     title: 'Field-of-view angle',
     content: '<p>Enter the field-of-view angles for your left lens. For most viewers these fields should be set to 50 degrees or&nbsp;more.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
@@ -282,7 +282,7 @@ angular
         $scope.data.distortion_coefficients_r = $scope.params.distortion_coefficients_r;
         $scope.data.distortion_coefficients_g = $scope.params.distortion_coefficients_g;
         $scope.data.distortion_coefficients_b = $scope.params.distortion_coefficients_b;
-        $scope.data.left_eye_field_of_view_angles = $scope.params.left_eye_field_of_view_angles;
+        $scope.data.field_of_view_angles = $scope.params.field_of_view_angles;
         $scope.data.$save();
 
         distortionPlot(
@@ -297,7 +297,7 @@ angular
       // true if current settings have non-default "advanced" field values
       var hasAdvancedSettings = function() {
         return ($scope.params !== undefined)
-            && (!areArraysEqual($scope.params.left_eye_field_of_view_angles, [50, 50, 50, 50]));
+            && (!areArraysEqual($scope.params.field_of_view_angles, [50, 50, 50, 50]));
       };
 
       $scope.$watch('wizard_step', function(value) {
@@ -315,12 +315,12 @@ angular
       $scope.reset = function() {
         $scope.params = {
           "display_pixels_per_inch": 424,
-          "screen_to_lens_distance": 0.042,
-          "inter_lens_distance": 0.060,
+          "screen_to_lens_distance": 42,
+          "inter_lens_distance": 60,
           "distortion_coefficients_r": [0, 0],
           "distortion_coefficients_g": [0, 0],
           "distortion_coefficients_b": [0, 0],
-          "left_eye_field_of_view_angles": [50, 50, 50, 50],
+          "field_of_view_angles": [50, 50, 50, 50],
         };
 
         $scope.isAdvancedExpanded = false;
@@ -339,7 +339,7 @@ angular
           "distortion_coefficients_r": $scope.data.distortion_coefficients_r,
           "distortion_coefficients_g": $scope.data.distortion_coefficients_g,
           "distortion_coefficients_b": $scope.data.distortion_coefficients_b,
-          "left_eye_field_of_view_angles": $scope.data.left_eye_field_of_view_angles,
+          "field_of_view_angles": $scope.data.field_of_view_angles,
         };
         $scope.save();
         $scope.isAdvancedExpanded = hasAdvancedSettings();
