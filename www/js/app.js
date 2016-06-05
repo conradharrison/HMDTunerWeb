@@ -43,7 +43,7 @@ var HELPER_PARAMETER_MODAL = {
   'display_pixels_per_inch': {
     focus: 'vendor',
     title: 'Display pixels-per-inch&nbsp;(pixels)',
-    content: '<img src="images/screen-to-lens.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> If your viewer comes with an adjustable focal distance, measure the average distance between the screen and the&nbsp;lenses.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
+    content: '<img src="images/step_1_phones.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> Enter the pixel density of your display in pixels-per-inch.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
   },
   'screen_to_lens_distance': {
     focus: 'vendor',
@@ -143,43 +143,6 @@ function makeQr(minType, correctionLevel, text, customPadding) {
   }
 }
 
-// rotate image proper in place, without CSS
-function rotateImg(img, radians) {
-  var canvas = document.createElement('canvas');
-  canvas.width = img.width;
-  canvas.height = img.height;
-  var canvas_context = canvas.getContext('2d');
-  canvas_context.translate(img.width/2, img.height/2);
-  canvas_context.rotate(radians);
-  canvas_context.drawImage(img, -img.width/2, -img.height/2);
-  img.src = canvas.toDataURL();
-}
-
-// generate SVG from an image, mapping pixels to rects
-function svgFromImage(img, imgScale) {
-  var canvas = document.createElement('canvas');
-  var width = canvas.width = img.width;
-  var height = canvas.height = img.height;
-  var canvas_context = canvas.getContext('2d');
-  canvas_context.drawImage(img, 0, 0);
-  // 8-bit RGBA pixel array from top-left to bottom-right
-  var pixels = canvas_context.getImageData(0, 0, width, height).data;
-  var x, y;
-  var svg = new Snap(width, height);
-  // Snap library annoyingly assumes we want the element appended to document
-  svg.node.parentNode.removeChild(svg.node);
-  svg.rect(0, 0, width, height).attr({fill: 'white'});
-  var black_pixels = svg.g().attr({fill: 'black'});
-  for (y = 0; y < height; y += imgScale) {
-    for (x = 0; x < width; x += imgScale) {
-      if (pixels[(x + y * width) * 4] < 128) {
-        black_pixels.add(svg.rect(x, y, imgScale, imgScale));
-      }
-    }
-  }
-  return svg.node;
-}
-
 function areArraysEqual(arr1, arr2) {
   var i;
   if (arr1 === arr2) {
@@ -247,42 +210,8 @@ angular
         'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
         'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
       })
-  .accentPalette('cardboard-blue');})
-
-.animation('.slide-margin', function($animateCss) {
-  var animation = {
-    enter : function(element, done) {
-      var animator = $animateCss(element, {
-        from: {
-          maxHeight: '0vh'
-        },
-        to: {
-          maxHeight: '100vh'
-        },
-        duration: 0.75
-      });
-      animator.start().finally(done);
-    },
-    leave : function(element, done) {
-      var animator = $animateCss(element, {
-        from: {
-          maxHeight: '100vh'
-        },
-        to: {
-          maxHeight: '0vh'
-        },
-        duration: 0.3
-      });
-      animator.start().finally(done);
-    },
-    move : function(element, done) {
-    },
-    addClass : function(element, className, done) {
-    },
-    removeClass : function(element, className, done) {
-    }
-  };
-  return animation;})
+  .accentPalette('cardboard-blue');
+})
 
 .controller('ModalInstanceCtrl', function ($scope, $modalInstance) {
   $scope.ok = function () {
@@ -303,7 +232,7 @@ angular
 .controller('myController', ['$scope', '$firebase', '$timeout', '$q', '$window', '$mdDialog',
   function($scope, $firebase, $timeout, $q, $window, $mdDialog) {
       var firebase_root = new Firebase(CONFIG.FIREBASE_URL);
-
+  
       $scope.alert = '';
 
       $scope.showDetailsModal = function(ev) {
@@ -401,8 +330,7 @@ angular
       $scope.saveOrLoadParameters = {
         open: false
       };
-
-      // Called when user changes params URI input field.
+      
       $scope.set_params = function() {
         $scope.params = {
           "display_pixels_per_inch": $scope.data.display_pixels_per_inch,
@@ -464,20 +392,6 @@ angular
                   var qr = makeQr(2, 'L', $scope.firebase_token);
                   document.getElementById('remote_qrcode').innerHTML = qr.createImgTag(QR_PIXELS_PER_CELL);
             });
-
-            // Manage auto-advance from welcome step once remote scene paired.
-            // Advance only allowed when starting from no active connections.
-            firebase_user.child('connections').on('value', function(connections) {
-              if (connections.val()) {
-                if ($scope.allow_auto_advance &&
-                  $scope.wizard_step === $scope.steps.WELCOME) {
-                  $scope.wizard_step = $scope.steps.WELCOME;
-                }
-                $scope.allow_auto_advance = false;
-              } else {
-                  $scope.allow_auto_advance = true;
-              }
-            });
           } else {
             console.log("Not authenticated on Firebase.");
           }
@@ -508,8 +422,7 @@ angular
 }])
 
 // Validation for zero distortion coefficients
-.directive('ngNonZero',
-  function() {
+.directive('ngNonZero', function() {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -520,39 +433,10 @@ angular
         });
       }
     };
-  })
-
-// Scale model-to-view by given factor and vice versa.
-.directive('myScale',
-  function() {
-    return {
-      restrict: 'A',
-      require: 'ngModel',
-      link: function(scope, elem, attrs, ngModel) {
-        var scale = parseInt(attrs.myScale, 10);
-        // model-to-view
-        ngModel.$formatters.push(
-          function(val) {
-            if (val) {
-              return val * scale;
-            }
-          });
-        // view-to-model
-        ngModel.$parsers.push(
-          function (val) {
-            var parsed = parseFloat(val);
-            if (isNaN(parsed)) {
-              return null;
-            }
-            return parsed / scale;
-          });
-      }
-    };
-  })
+})
 
 // Round view of numeric value to given fractional digits.
-.directive('roundView',
-  function() {
+.directive('roundView', function() {
     return {
       restrict: 'A',
       require: 'ngModel',
@@ -573,5 +457,4 @@ angular
         });
       }
     };
-  })
-;
+})
