@@ -159,6 +159,10 @@ function areArraysEqual(arr1, arr2) {
   return true;
 }
 
+function checkNull (val) {
+  return val == null ? 0 : val;
+}
+
 angular
 .module('myApp', ['firebase', 'ui.bootstrap', 'ngAnimate', 'ngMaterial', 'ngScrollSpy'])
 
@@ -274,15 +278,21 @@ angular
       };
 
       $scope.save = function() {
-
-        $scope.data.update_timestamp = Firebase.ServerValue.TIMESTAMP;
-        $scope.data.display_pixels_per_inch = $scope.params.display_pixels_per_inch;
-        $scope.data.screen_to_lens_distance = $scope.params.screen_to_lens_distance;
-        $scope.data.inter_lens_distance = $scope.params.inter_lens_distance;
-        $scope.data.distortion_coefficients_r = $scope.params.distortion_coefficients_r;
-        $scope.data.distortion_coefficients_g = $scope.params.distortion_coefficients_g;
-        $scope.data.distortion_coefficients_b = $scope.params.distortion_coefficients_b;
-        $scope.data.field_of_view_angles = $scope.params.field_of_view_angles;
+        
+        $scope.data.display_pixels_per_inch = checkNull($scope.params.display_pixels_per_inch);
+        $scope.data.screen_to_lens_distance = checkNull($scope.params.screen_to_lens_distance);
+        $scope.data.inter_lens_distance = checkNull($scope.params.inter_lens_distance);
+        $scope.data.distortion_coefficients_r[0] = checkNull($scope.params.distortion_coefficients_r[0]);
+        $scope.data.distortion_coefficients_g[0] = checkNull($scope.params.distortion_coefficients_g[0]);
+        $scope.data.distortion_coefficients_b[0] = checkNull($scope.params.distortion_coefficients_b[0]);
+        $scope.data.distortion_coefficients_r[1] = checkNull($scope.params.distortion_coefficients_r[1]);
+        $scope.data.distortion_coefficients_g[1] = checkNull($scope.params.distortion_coefficients_g[1]);
+        $scope.data.distortion_coefficients_b[1] = checkNull($scope.params.distortion_coefficients_b[1]);
+        $scope.data.field_of_view_angles[0] = checkNull($scope.params.field_of_view_angles[0]);
+        $scope.data.field_of_view_angles[1] = checkNull($scope.params.field_of_view_angles[1]);
+        $scope.data.field_of_view_angles[2] = checkNull($scope.params.field_of_view_angles[2]);
+        $scope.data.field_of_view_angles[3] = checkNull($scope.params.field_of_view_angles[3]);
+        
         $scope.data.$save();
 
         distortionPlot(
