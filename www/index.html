@@ -51,10 +51,6 @@
           <h1 class="animated fadeInUp">VR HMD Tuner</h1>
           <h4 class="animated fadeInUp">Tune your HMD for geometric and chromatic aberrations.</h4>
         </div>
-        <div ng-show="wizard_step == steps.OUTPUT" class="success-header ng-hide">
-          <h1 class="animated fadeInUp">Success!</h1>
-          <md-button class="md-flat md-large animated fadeInUp" ng-click="wizard_step = steps.WELCOME"> <img src="images/white_arrow.png" height="12" width="7" alt=" "/> Back to Form </md-button>
-        </div>
       </div>
     </div>
 
@@ -62,7 +58,7 @@
       <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
     </div>
 
-    <div class="fade-in-out clearfix" ng-show="wizard_step == steps.WELCOME">
+    <div class="fade-in-out clearfix">
       <div class="container">
         <div class="hero">
           <div ng-controller="ModalCtrl" style="margin-bottom: 22px;">
@@ -186,11 +182,11 @@
             </div>
           </div>
           <div class="buttons">
-            <md-button class="md-raised md-accent md-large" ng-disabled="parameters.k1.$invalid || parameters.k2.$invalid" ng-click="reset()"> Generate profile </md-button>
+            <md-button class="md-raised md-accent md-large" ng-disabled="parameters.k1.$invalid || parameters.k2.$invalid" ng-click="reset()"> Reset Form </md-button>
             <div class="clearfix"></div>
           </div>
         </form>
-        <div class="col-sm-6" ng-if="wizard_step == steps.WELCOME">
+        <div class="col-sm-6">
           <!-- TODO: declare context help together with input field somehow? -->
           <div class="product-help" affix>
             <div class="alert alert-tooltip">
@@ -224,18 +220,6 @@
   </div>
   </div>
 
-  <div class="fade-in-out clearfix" ng-show="wizard_step == steps.OUTPUT">
-    <div class="container">
-      <div class="panel">
-        <div class="panel-body animated fadeInUp">
-          <h1 class="seperator animated fadeInUp">Usage Guidelines</h1>
-          <p style="color:#666;margin-top:42px;">Use at yout own peril.</p>
-          <p>&nbsp;</p>
-          <p>&nbsp;</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="footer clearfix" id="maia-footer">

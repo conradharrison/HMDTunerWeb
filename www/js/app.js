@@ -42,28 +42,28 @@ var PARAM_QR_CUSTOM_PADDING = {
 var HELPER_PARAMETER_MODAL = {
   'display_pixels_per_inch': {
     focus: 'vendor',
-    title: 'Display pixels-per-inch&nbsp;(pixels)',
-    content: '<img src="images/step_1_phones.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> Enter the pixel density of your display in pixels-per-inch.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
+    title: 'Display pixels-per-inch (pixels)',
+    content: '<img src="images/step_1_phones.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> Enter the pixel density of your display in pixels-per-inch.</p>',
   },
   'screen_to_lens_distance': {
     focus: 'vendor',
-    title: 'Screen to lens distance&nbsp;(mm)',
-    content: '<img src="images/screen-to-lens.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> If your viewer comes with an adjustable focal distance, measure the average distance between the screen and the&nbsp;lenses.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
+    title: 'Screen to lens distance (mm)',
+    content: '<img src="images/screen-to-lens.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> If your viewer comes with an adjustable focal distance, measure the average distance between the screen and the lenses.</p>',
   },
   'inter_lens_distance': {
     focus: 'vendor',
-    title: 'Inter&#45;lens distance&nbsp;(mm)',
-    content: '<img src="images/interlens-distance.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> If your viewer comes with an adjustable inter-lens distance, measure the average distance between the screen and the&nbsp;lenses. </p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
+    title: 'Inter&#45;lens distance (mm)',
+    content: '<img src="images/interlens-distance.png" height="638" width="786" class="img-responsive" alt=" " /><p><strong>Note:</strong> If your viewer comes with an adjustable inter-lens distance, measure the average distance between the screen and the lenses. </p>',
   },
   'distortion_coefficients': {
     focus: 'vendor',
     title: 'Distortion Coefficients',
-    content: '<p>View the lens calibration VR scene which appears on your smartphone. Adjust the data until the vertical lines appear straight and angles appear right (90 degrees) through your viewer&nbsp;lenses.</p><div class="hide-in-modal"><p>This is the current lens curvature for your distortion&nbsp;coefficients:</p><p class="text-center"><div id="canvas-container"><canvas id="distortion_plot" width="140" height="280" style="width:auto; height: 100%;"></canvas></div></p></div><p><strong>Note:</strong> distortion coefficients should not be left set to 0.00 for any curved lens.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
+    content: '<p>View the lens calibration VR scene which appears on your smartphone. Adjust the data until the vertical lines appear straight and angles appear right (90 degrees) through your viewer lenses.</p><div class="hide-in-modal"><p>This is the current lens curvature for your distortion coefficients:</p><p class="text-center"><div id="canvas-container"><canvas id="distortion_plot" width="140" height="280" style="width:auto; height: 100%;"></canvas></div></p></div><p><strong>Note:</strong> distortion coefficients should not be left set to 0.00 for any curved lens.</p>',
   },
   'field_of_view_angles': {
     focus: 'vendor',
     title: 'Field-of-view angle',
-    content: '<p>Enter the field-of-view angles for your left lens. For most viewers these fields should be set to 50 degrees or&nbsp;more.</p><p class="help"><a href="https://support.google.com/cardboard/manufacturers/checklist/6322188" target="_blank">Help &nbsp;<img src="images/help-invert.png" height="19" width="19" alt="?" /><paper-ripple></paper-ripple></a></p>',
+    content: '<p>Enter the field-of-view angles for your left lens. For most viewers these fields should be set to 50 degrees or more.</p>',
   },
 };
 
@@ -164,7 +164,7 @@ function checkNull (val) {
 }
 
 angular
-.module('myApp', ['firebase', 'ui.bootstrap', 'ngAnimate', 'ngMaterial', 'ngScrollSpy'])
+.module('myApp', ['firebase', 'ui.bootstrap', 'ngMaterial'])
 
 .config(function($mdThemingProvider) {
   $mdThemingProvider.definePalette('cardboard-orange', {
@@ -263,9 +263,6 @@ angular
         });
       };
 
-      $scope.steps = { WELCOME: 0, OUTPUT: 1};
-      $scope.wizard_step = $scope.steps.WELCOME;
-
       $scope.helper_sections = HELPER_PARAMETER_MODAL;
 
       $scope.alerts = [];
@@ -279,21 +276,23 @@ angular
 
       $scope.save = function() {
         
+        // Firebase removes keys that are set to null. Well, we could check this in the Android app, but this is simpler.
         $scope.data.display_pixels_per_inch = checkNull($scope.params.display_pixels_per_inch);
         $scope.data.screen_to_lens_distance = checkNull($scope.params.screen_to_lens_distance);
         $scope.data.inter_lens_distance = checkNull($scope.params.inter_lens_distance);
-        $scope.data.distortion_coefficients_r[0] = checkNull($scope.params.distortion_coefficients_r[0]);
-        $scope.data.distortion_coefficients_g[0] = checkNull($scope.params.distortion_coefficients_g[0]);
-        $scope.data.distortion_coefficients_b[0] = checkNull($scope.params.distortion_coefficients_b[0]);
-        $scope.data.distortion_coefficients_r[1] = checkNull($scope.params.distortion_coefficients_r[1]);
-        $scope.data.distortion_coefficients_g[1] = checkNull($scope.params.distortion_coefficients_g[1]);
-        $scope.data.distortion_coefficients_b[1] = checkNull($scope.params.distortion_coefficients_b[1]);
-        $scope.data.field_of_view_angles[0] = checkNull($scope.params.field_of_view_angles[0]);
-        $scope.data.field_of_view_angles[1] = checkNull($scope.params.field_of_view_angles[1]);
-        $scope.data.field_of_view_angles[2] = checkNull($scope.params.field_of_view_angles[2]);
-        $scope.data.field_of_view_angles[3] = checkNull($scope.params.field_of_view_angles[3]);
         
-        $scope.data.$save();
+        var kr = [checkNull($scope.params.distortion_coefficients_r[0]), checkNull($scope.params.distortion_coefficients_r[1])];
+        var kg = [checkNull($scope.params.distortion_coefficients_g[0]), checkNull($scope.params.distortion_coefficients_g[1])];
+        var kb = [checkNull($scope.params.distortion_coefficients_b[0]), checkNull($scope.params.distortion_coefficients_b[1])];
+        $scope.data.distortion_coefficients_r = kr;
+        $scope.data.distortion_coefficients_g = kg;
+        $scope.data.distortion_coefficients_b = kb;
+        
+        var va = [checkNull($scope.params.field_of_view_angles[0]), checkNull($scope.params.field_of_view_angles[1]),
+                  checkNull($scope.params.field_of_view_angles[2]), checkNull($scope.params.field_of_view_angles[3])];
+        $scope.data.field_of_view_angles = va;
+        
+        $scope.data.$save();  
 
         distortionPlot(
           $scope.params.distortion_coefficients_r[0],
@@ -302,6 +301,7 @@ angular
           $scope.params.distortion_coefficients_g[1],
           $scope.params.distortion_coefficients_b[0],
           $scope.params.distortion_coefficients_b[1]);
+        
       };
 
       // true if current settings have non-default "advanced" field values
@@ -309,18 +309,6 @@ angular
         return ($scope.params !== undefined)
             && (!areArraysEqual($scope.params.field_of_view_angles, [50, 50, 50, 50]));
       };
-
-      $scope.$watch('wizard_step', function(value) {
-        var virtual_page;
-        switch (value) {
-          case $scope.steps.OUTPUT:
-            break;
-          case $scope.steps.WELCOME:
-            virtual_page = window.location.pathname + 'form';
-            break;
-        }
-        $scope.isAdvancedExpanded = hasAdvancedSettings();
-      });
 
       $scope.reset = function() {
         $scope.params = {
@@ -372,20 +360,17 @@ angular
       });
 
       firebase_root.onAuth(function(authData) {
-        // Note that onAuth will call given function immediately if user is
-        // already authenticated.  Use $timeout to ensure we consistently
-        // run within digest loop.
-        // TODO: use angularfire $onAuth
         $timeout(function() {
           if (authData) {
-            console.log("Authenticated on Firebase via provider",
-              authData.provider);
+            
+            console.log("Authenticated on Firebase via provider", authData.provider);
             $scope.firebase_token = authData.token;
+            
             console.log("Token=", $scope.firebase_token);
             var firebase_user = firebase_root.child('users').child(authData.uid);
+            
             $scope.data = $firebase(firebase_user).$asObject();
-            // init form data on initial load
-            // TODO: listen for out-of-band changes to params_uri
+
             $scope.data.$loaded().then(function(data) {
               if ($scope.data.screen_to_lens_distance == null) {
                 console.log("Resetting for the first time")
@@ -396,8 +381,6 @@ angular
               }
             });
 
-            // generate remote QR code
-            // Remote link href won't be available until next $digest cycle.
             $timeout(function () {
                   var qr = makeQr(2, 'L', $scope.firebase_token);
                   document.getElementById('remote_qrcode').innerHTML = qr.createImgTag(QR_PIXELS_PER_CELL);
@@ -430,20 +413,6 @@ angular
     return $sce.trustAsHtml(val);
   };
 }])
-
-// Validation for zero distortion coefficients
-.directive('ngNonZero', function() {
-    return {
-      restrict: 'A',
-      require: 'ngModel',
-      link: function($scope, $elem, $attrs, ngModel) {
-        $scope.$watch($attrs.ngModel, function(value) {
-          var isValid = (value !== 0);
-          ngModel.$setValidity($attrs.ngModel, isValid);
-        });
-      }
-    };
-})
 
 // Round view of numeric value to given fractional digits.
 .directive('roundView', function() {
